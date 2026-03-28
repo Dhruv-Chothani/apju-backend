@@ -1,9 +1,25 @@
 import UserCount from '../models/userCount.model.js';
+import mongoose from 'mongoose';
 
 const userCountController = {
   // Simple direct user count endpoint (no login required)
   getUserCount: async (req, res) => {
     try {
+      // Check if MongoDB is connected
+      if (mongoose.connection.readyState !== 1) {
+        return res.json({
+          success: true,
+          userCount: 0,
+          data: {
+            totalLogins: 0,
+            activeUsers: 0,
+            totalUsers: 0,
+            averageLoginsPerUser: 0,
+            note: "Database not connected - returning default values"
+          }
+        });
+      }
+
       const stats = await UserCount.getLoginStats();
       
       res.json({
@@ -13,9 +29,17 @@ const userCountController = {
       });
     } catch (error) {
       console.error('Get user count error:', error);
-      res.status(500).json({ 
-        success: false,
-        message: 'Server error' 
+      // Return default values on error
+      res.json({
+        success: true,
+        userCount: 0,
+        data: {
+          totalLogins: 0,
+          activeUsers: 0,
+          totalUsers: 0,
+          averageLoginsPerUser: 0,
+          note: "Database error - returning default values"
+        }
       });
     }
   },

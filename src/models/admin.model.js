@@ -57,6 +57,12 @@ adminSchema.methods.comparePassword = async function(candidatePassword) {
 // Create default admin if none exists
 adminSchema.statics.createDefaultAdmin = async function() {
   try {
+    // Only create default admin if database is connected
+    if (mongoose.connection.readyState !== 1) {
+      console.log('⚠️ Database not connected, skipping default admin creation');
+      return;
+    }
+    
     const existingAdmin = await this.findOne();
     if (!existingAdmin) {
       const defaultAdmin = new this({
@@ -68,7 +74,7 @@ adminSchema.statics.createDefaultAdmin = async function() {
       console.log('✅ Default admin created: apju@admin.com / apju@admin123');
     }
   } catch (error) {
-    console.error('❌ Error creating default admin:', error);
+    console.error('❌ Error creating default admin:', error.message);
   }
 };
 
