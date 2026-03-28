@@ -79,6 +79,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'APJU Media Hub Backend API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      userCount: '/api/user-count/usercount',
+      admin: '/api/admin',
+      content: '/api/content',
+      debug: '/api/debug/routes'
+    },
+    documentation: 'https://github.com/Dhruv-Chothani/backend-apju'
+  });
+});
+
 // Debug endpoint to test content routes
 app.get('/api/debug/routes', (req, res) => {
   const routes = [
