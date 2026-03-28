@@ -1,12 +1,20 @@
-import UserCount from '../models/userCount.model.js';
 import mongoose from 'mongoose';
+
+// Import UserCount model with error handling
+let UserCount;
+try {
+  UserCount = require('../models/userCount.model.js').default;
+} catch (error) {
+  console.log('⚠️ UserCount model not available, using fallback');
+  UserCount = null;
+}
 
 const userCountController = {
   // Simple direct user count endpoint (no login required)
   getUserCount: async (req, res) => {
     try {
       // Check if MongoDB is connected
-      if (mongoose.connection.readyState !== 1) {
+      if (mongoose.connection.readyState !== 1 || !UserCount) {
         return res.json({
           success: true,
           userCount: 0,

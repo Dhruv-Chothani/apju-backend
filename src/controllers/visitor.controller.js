@@ -1,5 +1,13 @@
-import Visitor from '../models/visitor.model.js';
 import mongoose from 'mongoose';
+
+// Import Visitor model with error handling
+let Visitor;
+try {
+  Visitor = require('../models/visitor.model.js').default;
+} catch (error) {
+  console.log('⚠️ Visitor model not available, using fallback');
+  Visitor = null;
+}
 
 const visitorController = {
   // Track website visit
@@ -9,7 +17,7 @@ const visitorController = {
       const userAgent = req.headers['user-agent'] || '';
       
       // Check if MongoDB is connected
-      if (mongoose.connection.readyState !== 1) {
+      if (mongoose.connection.readyState !== 1 || !Visitor) {
         return res.json({
           success: true,
           message: 'Visit tracked (database not connected)',
@@ -54,7 +62,7 @@ const visitorController = {
   getVisitorStats: async (req, res) => {
     try {
       // Check if MongoDB is connected
-      if (mongoose.connection.readyState !== 1) {
+      if (mongoose.connection.readyState !== 1 || !Visitor) {
         return res.json({
           success: true,
           stats: {
@@ -90,7 +98,7 @@ const visitorController = {
   getVisitCount: async (req, res) => {
     try {
       // Check if MongoDB is connected
-      if (mongoose.connection.readyState !== 1) {
+      if (mongoose.connection.readyState !== 1 || !Visitor) {
         return res.json({
           success: true,
           visitCount: 0,
@@ -118,7 +126,7 @@ const visitorController = {
   resetVisits: async (req, res) => {
     try {
       // Check if MongoDB is connected
-      if (mongoose.connection.readyState !== 1) {
+      if (mongoose.connection.readyState !== 1 || !Visitor) {
         return res.json({
           success: false,
           message: 'Database not connected'
